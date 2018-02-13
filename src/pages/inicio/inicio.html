@@ -1,0 +1,248 @@
+<ion-header style="background-size: cover;background-image: url('assets/imgs/wallpaper-2.jpg');">
+
+  <ion-navbar class="sin-fondo">
+    <button ion-button icon-start menuToggle  color="ball-icon">
+      <ion-icon name="menu"></ion-icon>
+      Calencario
+    </button>
+  </ion-navbar>
+
+  <ion-toolbar class="sin-fondo">
+    <ion-grid>
+
+      <ion-row>
+        <ion-col col-12>
+      <ion-datetime displayFormat="MMMM DD, YYYY" pickerFormat="DD MMMM YYYY" cancelText="Cancelar" doneText="Aceptar"
+                  max="{{fecha_maxima}}" min="{{fecha_minima}}" [(ngModel)]="fecha" (ngModelChange)="changeCalendar()"
+                    style="background-color: #ffffff7d;"></ion-datetime>
+        </ion-col>
+      </ion-row>
+
+    </ion-grid>
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content>
+
+  <div padding style="border-bottom: solid 1px; border-bottom-color: #d9d9d9; margin-bottom: 10px;margin-top: 10px;">
+<!--
+    <ion-row>
+      <ion-col col-6>
+        <ion-datetime displayFormat="MMMM DD, YYYY" pickerFormat="DD MMMM YYYY" cancelText="Cancelar" doneText="Aceptar"
+                      max="{{fecha_maxima}}" min="{{fecha_minima}}" [(ngModel)]="fecha" (ngModelChange)="changeCalendar()"
+                      style="background-color: #ffffff7d;"></ion-datetime>
+      </ion-col>
+      <ion-col col-6>
+      -->
+        <h3 style="font-size: 1.3rem;/*margin-top: 15px;*/">{{resultado}}</h3>
+    <!--
+      </ion-col>
+    </ion-row>
+-->
+  </div>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+    <ion-card *ngFor="let item of juegos" (click)="verDetalle(item)">
+
+    <!-- Sin Jugar -->
+    <ion-card-content *ngIf="item.statusNum == 1 && !(item.gameDuration.hours == '0' && item.gameDuration.minutes == '00')">
+
+      <ion-row>
+        <ion-col width-30>
+          <span class="hora">{{item.startTimeEastern}}</span>
+        </ion-col>
+        <ion-col width-30 style="text-align: right;">
+          <span class="canal">
+            {{item.watch.broadcast.broadcasters.national.length == 0 ? 'League Pass' : item.watch.broadcast.broadcasters.national[0].shortName }}
+          </span>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col col-2>
+          <img src="http://cdn.nba.net/assets/logos/teams/secondary/web/{{item.vTeam.triCode}}.svg">
+        </ion-col>
+        <ion-col col-9>
+          <div *ngIf="item.watch.broadcast.broadcasters.vTeam.length == 0">
+            <span class="equipo">{{buscarNombreEquipo(item.vTeam.teamId)}}</span> <span class="ganado-perdido">({{item.vTeam.win}}-{{item.vTeam.loss}})</span>
+          </div>
+          <div *ngIf="item.watch.broadcast.broadcasters.vTeam.length != 0">
+            <ion-row>
+              <span class="equipo">{{buscarNombreEquipo(item.vTeam.teamId)}}</span> <span class="ganado-perdido">({{item.vTeam.win}}-{{item.vTeam.loss}})</span>
+            </ion-row>
+            <ion-row>
+              <span class="equipo-canal">{{item.watch.broadcast.broadcasters.vTeam[0].shortName}}</span>
+            </ion-row>
+          </div>
+        </ion-col>
+        <ion-col col-1>
+          <span class="marcador">{{item.vTeam.score == '0' ? '' : item.vTeam.score}}</span>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col col-2>
+          <img src="http://cdn.nba.net/assets/logos/teams/secondary/web/{{item.hTeam.triCode}}.svg">
+        </ion-col>
+        <ion-col col-9>
+          <div *ngIf="item.watch.broadcast.broadcasters.hTeam.length == 0">
+            <span class="equipo">{{buscarNombreEquipo(item.hTeam.teamId)}}</span> <span class="ganado-perdido">({{item.hTeam.win}}-{{item.hTeam.loss}})</span>
+          </div>
+          <div *ngIf="item.watch.broadcast.broadcasters.hTeam.length != 0">
+            <ion-row>
+              <span class="equipo">{{buscarNombreEquipo(item.hTeam.teamId)}}</span> <span class="ganado-perdido">({{item.hTeam.win}}-{{item.hTeam.loss}})</span>
+            </ion-row>
+            <ion-row>
+              <span class="equipo-canal">{{item.watch.broadcast.broadcasters.hTeam[0].shortName}}</span>
+            </ion-row>
+          </div>
+        </ion-col>
+        <ion-col col-1>
+          <span class="marcador">{{item.hTeam.score == '0' ? '' : item.hTeam.score}}</span>
+        </ion-col>
+      </ion-row>
+
+    </ion-card-content>
+
+
+    <!-- Live -->
+    <ion-card-content *ngIf="item.statusNum == 2 || (item.gameDuration.hours == '0' && item.gameDuration.minutes == '00')">
+
+      <ion-row>
+        <ion-col width-30 style="padding: 0px;">
+          <span class="live">En Vivo</span>
+          <span class="live-time" *ngIf="item.gameDuration.hours == '0' && item.gameDuration.minutes == '00'">
+            Entrenamiento
+          </span>
+          <span class="live-time" *ngIf="item.period.isHalftime">
+            Medio Tiempo
+          </span>
+          <span class="live-time" *ngIf="!item.period.isHalftime && !(item.gameDuration.hours == '0' && item.gameDuration.minutes == '00')">
+            C{{item.period.current}} {{item.clock}}
+          </span>
+        </ion-col>
+        <ion-col width-30 style="text-align: right;">
+          <span class="canal">
+            {{item.watch.broadcast.broadcasters.national.length == 0 ? 'League Pass' : item.watch.broadcast.broadcasters.national[0].shortName }}
+          </span>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col col-2>
+          <img src="http://cdn.nba.net/assets/logos/teams/secondary/web/{{item.vTeam.triCode}}.svg">
+        </ion-col>
+        <ion-col col-8>
+          <div *ngIf="item.watch.broadcast.broadcasters.vTeam.length == 0">
+            <span class="{{ganador(item.vTeam.score, item.hTeam.score)}}">{{buscarNombreEquipo(item.vTeam.teamId)}}</span> <span class="ganado-perdido">({{item.vTeam.win}}-{{item.vTeam.loss}})</span>
+          </div>
+          <div *ngIf="item.watch.broadcast.broadcasters.vTeam.length != 0">
+            <ion-row>
+              <span class="{{ganador(item.vTeam.score, item.hTeam.score)}}">{{buscarNombreEquipo(item.vTeam.teamId)}}</span> <span class="ganado-perdido">({{item.vTeam.win}}-{{item.vTeam.loss}})</span>
+            </ion-row>
+            <ion-row>
+              <span class="equipo-canal">{{item.watch.broadcast.broadcasters.vTeam[0].shortName}}</span>
+            </ion-row>
+          </div>
+        </ion-col>
+        <ion-col col-2>
+          <span class="{{ganador(item.vTeam.score, item.hTeam.score)}}">{{item.vTeam.score}}</span>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col col-2>
+          <img src="http://cdn.nba.net/assets/logos/teams/secondary/web/{{item.hTeam.triCode}}.svg">
+        </ion-col>
+        <ion-col col-8>
+          <div *ngIf="item.watch.broadcast.broadcasters.hTeam.length == 0">
+            <span class="{{ganador(item.hTeam.score, item.vTeam.score)}}">{{buscarNombreEquipo(item.hTeam.teamId)}}</span> <span class="ganado-perdido">({{item.hTeam.win}}-{{item.hTeam.loss}})</span>
+          </div>
+          <div *ngIf="item.watch.broadcast.broadcasters.hTeam.length != 0">
+            <ion-row>
+              <span class="{{ganador(item.hTeam.score, item.vTeam.score)}}">{{buscarNombreEquipo(item.hTeam.teamId)}}</span> <span class="ganado-perdido">({{item.hTeam.win}}-{{item.hTeam.loss}})</span>
+            </ion-row>
+            <ion-row>
+              <span class="equipo-canal">{{item.watch.broadcast.broadcasters.hTeam[0].shortName}}</span>
+            </ion-row>
+          </div>
+        </ion-col>
+        <ion-col col-2>
+          <span class="{{ganador(item.hTeam.score, item.vTeam.score)}}">{{item.hTeam.score}}</span>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="item.isBuzzerBeater" style="text-align: center;background-color: lightgray;padding: 3px;">
+        <img src="http://cdn.nba.net/assets/logos/buzzer-beater-active.png" style="width: 80%;height: 20px;margin: 0 auto;"/>
+      </ion-row>
+
+    </ion-card-content>
+
+
+    <!-- Termino -->
+    <ion-card-content *ngIf="item.statusNum == 3" style="padding: 0px;">
+
+      <div style="padding: 5px 5px 0px 5px;">
+
+        <ion-row>
+          <ion-col width-30>
+          <span class="hora" *ngIf="item.period.current > 4">
+            Finalizo / Tiempo Extra
+          </span>
+            <span class="hora" *ngIf="item.period.current < 5">
+            Finalizo
+          </span>
+          </ion-col>
+          <ion-col width-30 style="text-align: right;">
+          <span class="canal">
+            {{item.watch.broadcast.broadcasters.national.length == 0 ? 'League Pass' : item.watch.broadcast.broadcasters.national[0].shortName }}
+          </span>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col col-2>
+            <img src="http://cdn.nba.net/assets/logos/teams/secondary/web/{{item.vTeam.triCode}}.svg">
+          </ion-col>
+          <ion-col col-8>
+            <span class="{{ganador(item.vTeam.score, item.hTeam.score)}}">{{buscarNombreEquipo(item.vTeam.teamId)}}</span> <span class="ganado-perdido">({{item.vTeam.win}}-{{item.vTeam.loss}})</span>
+          </ion-col>
+          <ion-col col-2>
+            <span class="{{ganador(item.vTeam.score, item.hTeam.score)}}">{{item.vTeam.score}}</span>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col col-2>
+            <img src="http://cdn.nba.net/assets/logos/teams/secondary/web/{{item.hTeam.triCode}}.svg">
+          </ion-col>
+          <ion-col col-8>
+            <span class="{{ganador(item.hTeam.score, item.vTeam.score)}}">{{buscarNombreEquipo(item.hTeam.teamId)}}</span> <span class="ganado-perdido">({{item.hTeam.win}}-{{item.hTeam.loss}})</span>
+          </ion-col>
+          <ion-col col-2>
+            <span class="{{ganador(item.hTeam.score, item.vTeam.score)}}">{{item.hTeam.score}}</span>
+          </ion-col>
+        </ion-row>
+
+      </div>
+
+      <ion-row *ngIf="item.nugget.text != ''" style="text-align: center;background-color: lightgray;padding: 3px;">
+        <div *ngIf="item.isBuzzerBeater" style="width: 100%;text-align: center;">
+          <img src="http://cdn.nba.net/assets/logos/buzzer-beater-post.png" style="width: 20%;display: inline;position: relative;top: 5px;"/>
+          <span class="nugget" style="width: 80%;">{{item.nugget.text}}</span>
+        </div>
+
+        <span class="nugget" *ngIf="!item.isBuzzerBeater">{{item.nugget.text}}</span>
+
+      </ion-row>
+
+    </ion-card-content>
+
+
+  </ion-card>
+
+
+</ion-content>

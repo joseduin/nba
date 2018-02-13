@@ -1,0 +1,34 @@
+<ion-menu [content]="mycontent">
+  <ion-header>
+    <ion-toolbar color="ball-icon">
+      <ion-title class="title-ios-modif"> <ion-icon name="menu" menuClose></ion-icon> Menú </ion-title>
+      <ion-buttons end>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <ion-card id="cardMenu">
+
+      <ion-card-content style="text-align: center;" *ngIf="user != undefined">
+<!--
+        <ion-avatar item-left>
+          <img src="{{user.imagenUrl}}">
+        </ion-avatar>
+        -->
+        <span style="font-weight: bold;">{{user.nombres}}</span>
+        <p style="font-size: small;color: gray;">{{user.email}}</p>
+
+      </ion-card-content>
+    </ion-card>
+    <ion-list>
+      <ion-item (click)="logout()">
+        Cerrar Sesión
+      </ion-item>
+    </ion-list>
+  </ion-content>
+
+</ion-menu>
+
+<ion-nav [root]="rootPage" #mycontent swipeBackEnabled="false"></ion-nav>
+

@@ -1,0 +1,168 @@
+<ion-header>
+
+  <ion-row style="height: 100%;">
+
+    <ion-col col-6 [style.background]="vTeamColor">
+      <ion-row>
+        <ion-col col-4>
+          <img src="http://cdn.nba.net/assets/logos/teams/secondary/web/{{vTeam.tricode}}.svg">
+        </ion-col>
+
+        <ion-col col-8 style="text-align: left;padding: 0;" *ngIf="juegoDetalle.juego.statusNum == 1">
+          <span class="detalle-titulo">{{vTeam.nickname}}</span>
+          <span class="detalle-title-perdida-ganada-left">({{juegoDetalle.juego.vTeam.win}} - {{juegoDetalle.juego.vTeam.loss}})</span>
+        </ion-col>
+
+        <ion-col col-6 style="text-align: left;padding: 0;" *ngIf="!(juegoDetalle.juego.statusNum == 1)">
+          <span class="detalle-titulo">{{vTeam.nickname}}</span>
+          <span class="detalle-title-perdida-ganada-left">({{juegoDetalle.juego.vTeam.win}} - {{juegoDetalle.juego.vTeam.loss}})</span>
+        </ion-col>
+        <ion-col col-2 style="text-align: left;padding: 0;" *ngIf="!(juegoDetalle.juego.statusNum == 1)">
+          <span class="detalle-titulo">{{juegoDetalle.juego.vTeam.score}}</span>
+        </ion-col>
+
+      </ion-row>
+    </ion-col>
+
+    <ion-col col-6 [style.background]="hTeamColor">
+      <ion-row>
+
+        <ion-col col-8 style="text-align: right;padding: 0;" *ngIf="juegoDetalle.juego.statusNum == 1">
+          <span class="detalle-titulo">{{hTeam.nickname}}</span>
+          <span class="detalle-title-perdida-ganada-rigth">({{juegoDetalle.juego.hTeam.win}} - {{juegoDetalle.juego.hTeam.loss}})</span>
+        </ion-col>
+
+        <ion-col col-2 style="text-align: right;padding: 0;" *ngIf="!(juegoDetalle.juego.statusNum == 1)">
+          <span class="detalle-titulo">{{juegoDetalle.juego.hTeam.score}}</span>
+        </ion-col>
+        <ion-col col-6 style="text-align: right;padding: 0;" *ngIf="!(juegoDetalle.juego.statusNum == 1)">
+          <span class="detalle-titulo">{{hTeam.nickname}}</span>
+          <span class="detalle-title-perdida-ganada-rigth">({{juegoDetalle.juego.hTeam.win}} - {{juegoDetalle.juego.hTeam.loss}})</span>
+        </ion-col>
+
+        <ion-col col-4>
+          <img src="http://cdn.nba.net/assets/logos/teams/secondary/web/{{hTeam.tricode}}.svg">
+        </ion-col>
+      </ion-row>
+    </ion-col>
+
+  </ion-row>
+
+  <div class="detalle-center-top">
+    <!-- Sin Jugar -->
+    <span class="detalle-title-tags" *ngIf="juegoDetalle.juego.statusNum == 1 && !(juegoDetalle.juego.gameDuration.hours == '0' && juegoDetalle.juego.gameDuration.minutes == '00')">
+      {{juegoDetalle.juego.startTimeEastern}}
+  </span>
+
+    <!-- Live -->
+    <span class="detalle-title-tags" *ngIf="juegoDetalle.juego.statusNum == 2 || (juegoDetalle.juego.gameDuration.hours == '0' && juegoDetalle.juego.gameDuration.minutes == '00')">
+
+      <span *ngIf="juegoDetalle.juego.gameDuration.hours == '0' && juegoDetalle.juego.gameDuration.minutes == '00'">
+        Entrenamiento
+      </span>
+      <span *ngIf="juegoDetalle.juego.period.isHalftime">
+        Medio Tiempo
+      </span>
+      <span *ngIf="!juegoDetalle.juego.period.isHalftime && !(juegoDetalle.juego.gameDuration.hours == '0' && juegoDetalle.juego.gameDuration.minutes == '00')">
+        C{{juegoDetalle.juego.period.current}}
+      </span>
+
+    </span>
+
+    <!-- Termino -->
+    <span class="detalle-title-tags" *ngIf="juegoDetalle.juego.statusNum == 3">
+      Finalizo
+    </span>
+  </div>
+
+  <div class="detalle-center-bottom" *ngIf="juegoDetalle.juego.statusNum != 3 && !(juegoDetalle.juego.gameDuration.hours == '0' && juegoDetalle.juego.gameDuration.minutes == '00')">
+    <!-- Sin Jugar -->
+    <span class="detalle-title-tags" *ngIf="juegoDetalle.juego.statusNum == 1">
+      {{juegoDetalle.juego.startDateEastern | date: 'COMPACTO to HUMAN'}}
+    </span>
+
+    <!-- Live -->
+    <div *ngIf="!juegoDetalle.juego.period.isHalftime && !(juegoDetalle.juego.gameDuration.hours == '0' && juegoDetalle.juego.gameDuration.minutes == '00')">
+      <span class="detalle-title-tags" *ngIf="juegoDetalle.juego.statusNum == 2 || (juegoDetalle.juego.gameDuration.hours == '0' && juegoDetalle.juego.gameDuration.minutes == '00')">
+        {{juegoDetalle.juego.clock}}
+      </span>
+    </div>
+
+  </div>
+
+  <button ion-button round icon-only (click)="back()"
+          class="back-transparent" color="ball-icon">
+    <ion-icon name="ios-arrow-back"></ion-icon>
+  </button>
+
+</ion-header>
+
+<ion-content>
+
+  <ion-list no-lines *ngIf="juegoDetalle.juego.statusNum != 1">
+    <ion-item>
+      <ion-label>Cuarto</ion-label>
+      <ion-select [(ngModel)]="cuarto" interface="action-sheet" cancelText="Cancelar">
+        <ion-option value="1" (ionSelect)="changeCuarto('1')" *ngIf="juegoDetalle.juego.period.current > 0">C1</ion-option>
+        <ion-option value="2" (ionSelect)="changeCuarto('2')" *ngIf="juegoDetalle.juego.period.current > 1">C2</ion-option>
+        <ion-option value="3" (ionSelect)="changeCuarto('3')" *ngIf="juegoDetalle.juego.period.current > 2">C3</ion-option>
+        <ion-option value="4" (ionSelect)="changeCuarto('4')" *ngIf="juegoDetalle.juego.period.current > 3">C4</ion-option>
+        <ion-option value="5" (ionSelect)="changeCuarto('5')" *ngIf="juegoDetalle.juego.period.current > 4">PRÓ</ion-option>
+      </ion-select>
+    </ion-item>
+    <div ion-item *ngFor="let s of itemsAuxScroll">
+
+      <ion-card *ngIf="(s.teamId != vTeam.teamId) && (s.teamId != hTeam.teamId) && s.teamId == ''">
+        <ion-card-content style="text-align: center;">
+          <span>{{s.formatted.description}}</span>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Visitante -->
+      <ion-card col-6 style="margin-left: 1px;margin-bottom: 1px; margin-top: 1px;" *ngIf="s.teamId == vTeam.teamId"
+                (click)="verDescripcionJugada(s.formatted.description)">
+
+        <ion-card-content *ngIf="s.personId != ''" style="padding: 0px;">
+          <ion-row>
+            <ion-col col-6 style="font-size: smaller;">{{s.clock}}</ion-col>
+            <ion-col col-6 style="font-size: smaller;text-align: right;font-weight: bold;">{{s.hTeamScore}} - {{s.vTeamScore}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <img src="https://neulionmdnyc-a.akamaihd.net/nba/media/img/players/head/132x132/{{s.personId}}.png" style="height: 100%;">
+          </ion-row>
+        </ion-card-content>
+
+        <ion-card-content *ngIf="s.personId == ''" style="padding: 0px;">
+          <span style="font-size: smaller;">{{s.formatted.description}}</span>
+        </ion-card-content>
+
+      </ion-card>
+
+      <!-- Locales -->
+      <ion-card col-6 style="margin-left: 49.8%;margin-bottom: 1px; margin-top: 1px;" *ngIf="s.teamId == hTeam.teamId"
+                (click)="verDescripcionJugada(s.formatted.description)">
+
+        <ion-card-content *ngIf="s.personId != ''" style="padding: 0px;">
+          <ion-row>
+            <ion-col col-6 style="font-size: smaller;text-align: left;font-weight: bold;">{{s.hTeamScore}} - {{s.vTeamScore}}</ion-col>
+            <ion-col col-6 style="font-size: smaller;text-align: right;">{{s.clock}}</ion-col>
+          </ion-row>
+          <ion-row>
+            <img src="https://neulionmdnyc-a.akamaihd.net/nba/media/img/players/head/132x132/{{s.personId}}.png" style="height: 100%;">
+          </ion-row>
+        </ion-card-content>
+
+        <ion-card-content *ngIf="s.personId == ''" style="padding: 0px;">
+          <span style="font-size: smaller;">{{s.formatted.description}}</span>
+        </ion-card-content>
+
+
+      </ion-card>
+    </div>
+
+    <ion-infinite-scroll (ionInfinite)="doInfinite($event)" *ngIf="scroll">
+      <ion-infinite-scroll-content></ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+
+  </ion-list>
+</ion-content>

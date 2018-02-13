@@ -1,0 +1,14 @@
+{
+  "name": "nba",
+  "app_id": "",
+  "type": "ionic-angular",
+  "integrations": {
+    "cordova": {}
+  },
+  "proxies": [
+    {
+      "path": "/v1",
+      "proxyUrl": "http://data.nba.net/data/prod/v1/"
+    }
+  ]
+}

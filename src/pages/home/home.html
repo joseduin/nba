@@ -1,0 +1,45 @@
+<ion-header>
+    <button ion-button icon-start color="ball-icon">
+      <ion-icon name="basketball"></ion-icon>
+       NBA
+    </button>
+</ion-header>
+
+<ion-content padding style="text-align: center;background-size: cover;background-image: url('assets/imgs/wallpaper.png'); ">
+
+  <img src="assets/imgs/logo-nba.png" style="max-height: 65%; max-width:85%;" >
+  <br>
+
+  <h3 class="letras-blancas">Ingresa con tu cuenta</h3>
+  <button (click)="login_google()" ion-button block large icon-only style="background-color:#DD4A3A;">
+    <ion-icon name="logo-googleplus"></ion-icon>
+  </button>
+
+
+  <button (click)="login_falso()" ion-button>Falso Login</button>
+  <!--
+    <button (click)="googleLogOut()" ion-button>Google LogOut</button>
+
+
+    <div *ngIf="isLoggedIn; else facebookLogin">
+      <h2>Hi, {{users.name}} ({{users.email}})</h2>
+      <p>
+        Gender: {{users.gender}}
+      </p>
+      <p>
+        <img src="{{users.picture.data.url}}" width="100" alt="{{users.name}}" />
+      </p>
+      <p>
+        <button ion-button icon-right (click)="logout()">
+          Logout
+        </button>
+      </p>
+    </div>
+    <ng-template #facebookLogin>
+      <button ion-button icon-right (click)="login_fb()">
+        Login with
+        <ion-icon name="logo-facebook"></ion-icon>
+      </button>
+    </ng-template>
+  -->
+</ion-content>
